@@ -3,32 +3,11 @@ var express = require('express');
 var routes = function (Book) {
     var bookRouter = express.Router();
 
+    var bookController = require('../controllers/bookController')(Book);
+
     bookRouter.route('/')
-        .post(function (req, res) {
-            var book = new Book(req.body);
-            book.save();
-            res.status(201).send(book);
-        })
-        .get(function (req, res) {
-            var query = {};
-
-            if (req.query.genre) {
-                query.genre = req.query.genre;
-            }
-
-            if (req.query.author) {
-                query.author = req.query.author;
-            }
-
-            Book.find(query, function (err, books) {
-                if (err)
-                    console.log(err);
-                else
-                    res.json(books);
-            });
-
-
-        });
+        .post(bookController.post)
+        .get(bookController.get);
 
     bookRouter.use('/:bookId', function (req, res, next) {
         Book.findById(req.params.bookId, function (err, book) {
